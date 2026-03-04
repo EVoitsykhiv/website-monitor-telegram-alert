@@ -1,6 +1,6 @@
-import time
 import requests
 import asyncio
+from datetime import datetime
 from config import WEBSITE_URL, CHECK_INTERVAL
 from telegram_alert import send_alert
 
@@ -35,7 +35,10 @@ async def main():
 
             print(message)
 
-            await send_alert(message)
+            try:
+                await send_alert(message)
+            except Exception as e:
+                print(f"Telegram error: {e}")
 
         elif status and not last_status:
 
@@ -43,7 +46,14 @@ async def main():
 
             print(message)
 
-            await send_alert(message)
+            try:
+                await send_alert(message)
+            except Exception as e:
+                print(f"Telegram error: {e}")
+
+        else:
+
+            print(f"[{datetime.now()}] ✔ Website OK: {WEBSITE_URL}")
 
         last_status = status
 
