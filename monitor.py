@@ -10,7 +10,7 @@ def check_website():
     try:
         response = requests.get(WEBSITE_URL, timeout=10)
 
-        if response.status_code == 200:
+        if 200 <= response.status_code < 400:
             return True
 
         return False
@@ -23,21 +23,29 @@ async def main():
 
     print("Website monitor started")
 
+    last_status = True
+
     while True:
 
         status = check_website()
 
-        if not status:
+        if not status and last_status:
 
-            message = f"⚠️ WEBSITE DOWN: {WEBSITE_URL}"
+            message = f"🚨 WEBSITE DOWN: {WEBSITE_URL}"
 
             print(message)
 
             await send_alert(message)
 
-        else:
+        elif status and not last_status:
 
-            print(f"Website OK: {WEBSITE_URL}")
+            message = f"✅ WEBSITE RECOVERED: {WEBSITE_URL}"
+
+            print(message)
+
+            await send_alert(message)
+
+        last_status = status
 
         await asyncio.sleep(CHECK_INTERVAL)
 
